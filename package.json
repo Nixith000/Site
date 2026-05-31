@@ -1,7 +1,7 @@
 {
-  "name": "meu-jogo-detetive",
+  "name": "detetive-premium",
   "version": "1.0.0",
-  "description": "Servidor do Jogo Detetive",
+  "description": "Jogo Detetive Premium Realtime",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -9,5 +9,8 @@
   "dependencies": {
     "express": "^4.19.2",
     "socket.io": "^4.7.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
