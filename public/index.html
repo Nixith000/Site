@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detetive Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="logo">Detetive</h1>
+        
+        <div id="painelVitoria" class="card-vitoria" style="display: none;">
+            <p class="modal-title" style="color: #2ecc71;">Caso Solucionado</p>
+            <h2 style="color: #fff; margin: 10px 0;"><span id="vendedorNick" style="color: #2ecc71;"></span> ACERTOU!</h2>
+            <div id="detalhesCrime" class="info-text" style="color: #eee; font-size: 16px;"></div>
+            <button class="btn btn-gold mt-20" onclick="limparCacheEReload()">Voltar ao Menu</button>
+        </div>
+
+        <div id="menu" class="card">
+            <button id="btnReconectar" class="btn btn-gold mb-20" style="display: none; background: linear-gradient(135deg, #f39c12 0%, #d35400 100%); border: 1px solid #fff;" onclick="reconectarJogo()">
+                🔄 Voltar ao Jogo em Andamento
+            </button>
+
+            <input type="text" id="playerNick" placeholder="Seu Codinome / Nick" maxlength="15">
+            <div class="divider" style="margin: 10px 0;"></div>
+            
+            <button class="btn btn-gold" onclick="criarSala()">Criar Nova Investigação</button>
+            <div class="divider">ou</div>
+            <input type="text" id="codigoEntrada" placeholder="Código da Sala" maxlength="4">
+            <button class="btn btn-dark" onclick="entrarSala()">Ingressar na Sala</button>
+        </div>
+
+        <div id="lobby" class="card" style="display:none;">
+            <h2>Sala Confidencial: <span id="displayCodigo" class="highlight"></span></h2>
+            
+            <div class="lista-jogadores-box">
+                <p class="info-text" style="font-weight: bold; color: var(--gold);">Investigadores na Sala:</p>
+                <ul id="listaJogadores"></ul>
+            </div>
+            
+            <p class="info-text mt-20">Aguardando investigadores (Mínimo 4)...</p>
+            <button id="btnIniciar" class="btn btn-gold mt-20" style="display:none;" onclick="iniciarJogo()">Preparar Mistério</button>
+        </div>
+
+        <div id="aguardando" class="card" style="display:none;">
+            <div class="spinner"></div>
+            <h2>Aguarde...</h2>
+            <p class="info-text">O anfitrião está definindo o crime no momento.</p>
+        </div>
+
+        <div id="escolhaHost" class="card" style="display:none;">
+            <h2>Defina o Mistério</h2>
+            <p class="info-text">Escolha as 3 cartas que ficarão no envelope confidencial:</p>
+            
+            <div class="form-group">
+                <label>O Suspeito:</label>
+                <select id="hostSuspeito"></select>
+                
+                <label>A Arma:</label>
+                <select id="hostArma"></select>
+                
+                <label>O Local:</label>
+                <select id="hostLocal"></select>
+            </div>
+            
+            <button class="btn btn-gold mt-20" onclick="enviarEnvelope()">Confirmar e Distribuir Cartas</button>
+        </div>
+
+        <div id="jogo" style="display:none;">
+            <div id="painelAnfitriao" class="card mb-20" style="display:none; border-color: var(--gold);">
+                <h2>Painel do Anfitrião</h2>
+                <button class="btn btn-gold" onclick="rolarDado()">🎲 Rolar Dado</button>
+            </div>
+
+            <div id="areaDado" class="card mb-20" style="display:none; text-align: center;">
+                <p class="info-text">O dado rolou:</p>
+                <h1 id="valorDado" class="highlight" style="font-size: 48px; margin: 10px 0;">🎲 0</h1>
+            </div>
+
+            <div class="card mb-20">
+                <h2>Seu Dossiê (Suas Cartas)</h2>
+                <div id="minhasCartas" class="cartas-container mb-20"></div>
+
+                <div id="secaoCartasEliminados" style="display: none; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 15px;">
+                    <p class="info-text" style="color: #e74c3c; font-weight: bold; margin-bottom: 10px;">Cartas Alternativas (Jogadores Eliminados):</p>
+                    <div id="cartasEliminados" class="cartas-container"></div>
+                </div>
+                
+                <div class="dica-box mt-20">
+                    <p class="info-text">Selecione uma carta para mostrar no seu celular:</p>
+                    <select id="selectMinhaDica"></select>
+                    <button class="btn btn-dark" onclick="mostrarDicaLocal()">Mostrar Carta</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Fazer Acusação Final</h2>
+                <div class="form-group">
+                    <select id="selectSuspeito"></select>
+                    <select id="selectArma"></select>
+                    <select id="selectLocal"></select>
+                    <button class="btn btn-danger mt-20" onclick="abrirConfirmacaoAcusacao()">Acusar!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalDica" class="modal">
+        <div class="modal-content">
+            <p class="modal-title">Revelação</p>
+            <h2>"Eu tenho: <span id="cartaRevelada" class="highlight-gold"></span>"</h2>
+            <button class="btn btn-dark mt-20" onclick="fecharModal('modalDica')">Voltar</button>
+        </div>
+    </div>
+
+    <div id="modalAlerta" class="modal">
+        <div class="modal-content" id="modalAlertaLayout" style="border: 2px solid var(--gold);">
+            <p class="modal-title" id="alertaTitulo" style="color: var(--gold); font-weight: bold;">Aviso do Caso</p>
+            <h3 id="alertaConteudo" style="margin: 15px 0; font-weight: 500; font-size: 16px; line-height: 1.4;"></h3>
+            <button class="btn btn-gold mt-20" id="btnAlertaOk" onclick="fecharAlertaCustom()">Ok</button>
+        </div>
+    </div>
+
+    <div id="modalConfirmar" class="modal">
+        <div class="modal-content" style="border: 2px solid var(--danger);">
+            <p class="modal-title" style="color: var(--danger); font-weight: bold;">⚠️ ATENÇÃO DETETIVE</p>
+            <h3 style="margin: 15px 0; font-weight: 500; font-size: 16px;">Tem certeza absoluta da sua acusação? Se errar, as suas cartas serão expostas e você será eliminado!</h3>
+            <div style="display: flex; gap: 10px;" class="mt-20">
+                <button class="btn btn-danger" onclick="processarAcusacaoFinal(true)">Sim, Declarar</button>
+                <button class="btn btn-dark" onclick="processarAcusacaoFinal(false)">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
